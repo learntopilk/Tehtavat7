@@ -5,6 +5,10 @@ import Togglable from './components/Togglable'
 import loginService from './services/login'
 import blogService from './services/blogs'
 import BlogForm from './components/BlogForm'
+import { connect } from 'react-redux'
+import Notification from './components/Notification'
+import notificationReducer from './reducers/notificationReducer'
+import { notify } from './reducers/notificationReducer'
 
 class App extends React.Component {
   constructor(props) {
@@ -15,7 +19,7 @@ class App extends React.Component {
       password: '',
       token: null,
       error: '',
-      message: '',
+      notification: '',
       user: null,
       blogtitle: '',
       blogauthor: '',
@@ -50,7 +54,7 @@ class App extends React.Component {
 
       console.log("user from POST:", user)
 
-      this.setMessageWithTimeOut(`Welcome, ${user.username}!`)
+      this.props.notify(`Welcome, ${user.username}!`, 5)
       this.setState({ username: '', password: '', user })
 
       window.localStorage.setItem('loggedUser', JSON.stringify(user))
@@ -66,7 +70,7 @@ class App extends React.Component {
 
   handleLoginFieldChange = (event) => {
     event.preventDefault()
-    console.log("1 ", event.target.value, " ", event.target.name)
+    //console.log("1 ", event.target.value, " ", event.target.name)
     this.setState({ [event.target.name]: event.target.value })
   }
 
@@ -87,11 +91,6 @@ class App extends React.Component {
     this.setState({ [event.target.name]: event.target.value })
   }
 
-  setMessageWithTimeOut = (message) => {
-    this.setState({ message }, () => {
-      setTimeout(() => { this.setState({ message: null }) }, 5000)
-    })
-  }
 
   onBlogSubmit = async (event) => {
     event.preventDefault()
@@ -101,8 +100,6 @@ class App extends React.Component {
       author: this.state.blogauthor,
       url: this.state.blogurl
     }
-
-    console.log("post to be made: ", blog)
 
     try {
       const result = await blogService.createBlogPost(blog)
@@ -115,7 +112,7 @@ class App extends React.Component {
         blogtitle: '',
         blogurl: '',
         blogauthor: ''
-      }, () => {this.setMessageWithTimeOut(`Added blog with title ${result.title} from author ${result.author}`)})
+      }, () => {this.props.notify(`Added blog with title ${result.title} from author ${result.author}`, 5)})
       
     } catch (err) {
       console.log(err)
@@ -126,6 +123,7 @@ class App extends React.Component {
   }
 
   componentDidMount() {
+    console.log(this.props)
     console.log('getting blogs...')
     blogService.getAll().then(blogs => {
       this.setState({ blogs })
@@ -153,8 +151,9 @@ class App extends React.Component {
     if (this.state.user === null) {
       return (
         <div>
+          
           <h3 className="error">{this.state.error}</h3>
-          <h3 className="message">{this.state.message}</h3>
+          <Notification />
           <Togglable buttonText="Login">
             <Login login={this.login} handleLoginFieldChange={this.handleLoginFieldChange} state={this.state} visible={this.state.visible} />
           </Togglable>
@@ -166,7 +165,7 @@ class App extends React.Component {
           <h2>blogs</h2>
           <button onClick={this.logout}>logout</button>
           <h3 className="error">{this.state.error}</h3>
-          <h3 className="message">{this.state.message}</h3>
+          <Notification />
           <Togglable buttonText="Submit new post">
             <BlogForm state={this.state} blogInputChangeHandler={this.onBlogInputChange} onBlogSubmit={this.onBlogSubmit} />
           </Togglable>
@@ -181,4 +180,8 @@ class App extends React.Component {
   }
 }
 
-export default App;
+// ADD REDUCER OR SOMETHING HERE
+const mapDispatchToProps = {
+  notify
+}
+export default connect(null, mapDispatchToProps)(App)
