@@ -6,7 +6,7 @@ class Notification extends React.Component {
 
     render() {
         const notification = this.props.notification
-        const style = {
+        const style = notification === "" ? {} : {
             border: "solid",
             padding: 12,
             borderWidth: 3

@@ -2,6 +2,7 @@ import React from 'react'
 import Blog from './components/Blog'
 import Login from './components/Login'
 import Togglable from './components/Togglable'
+import { BrowserRouter as Router, Route, Link } from 'react-router-dom'
 import loginService from './services/login'
 import blogService from './services/blogs'
 import BlogForm from './components/BlogForm'
@@ -9,6 +10,9 @@ import { connect } from 'react-redux'
 import Notification from './components/Notification'
 import notificationReducer from './reducers/notificationReducer'
 import { notify } from './reducers/notificationReducer'
+import UserList from './components/UserList'
+import userService from './services/users'
+import userReducer, { initializeUsers } from './reducers/userReducer';
 
 class App extends React.Component {
   constructor(props) {
@@ -19,7 +23,6 @@ class App extends React.Component {
       password: '',
       token: null,
       error: '',
-      notification: '',
       user: null,
       blogtitle: '',
       blogauthor: '',
@@ -29,7 +32,6 @@ class App extends React.Component {
     }
 
     this.deleteHandler = (id) => {
-      console.log(id)
       let blogsToUpdate = []
       for (let i = 0; i < this.state.blogs.length; i++) {
         if (this.state.blogs[i].id === id) {
@@ -46,13 +48,10 @@ class App extends React.Component {
 
   login = async (event) => {
     event.preventDefault()
-    console.log('logging in')
 
     try {
       const userObj = { username: this.state.username, password: this.state.password }
       const user = await loginService.login(userObj)
-
-      console.log("user from POST:", user)
 
       this.props.notify(`Welcome, ${user.username}!`, 5)
       this.setState({ username: '', password: '', user })
@@ -70,7 +69,6 @@ class App extends React.Component {
 
   handleLoginFieldChange = (event) => {
     event.preventDefault()
-    //console.log("1 ", event.target.value, " ", event.target.name)
     this.setState({ [event.target.name]: event.target.value })
   }
 
@@ -104,7 +102,6 @@ class App extends React.Component {
     try {
       const result = await blogService.createBlogPost(blog)
 
-      // Add real user info instead of simple ID
       let moddedRes = result
       moddedRes.user = this.state.user
       this.setState({
@@ -112,8 +109,8 @@ class App extends React.Component {
         blogtitle: '',
         blogurl: '',
         blogauthor: ''
-      }, () => {this.props.notify(`Added blog with title ${result.title} from author ${result.author}`, 5)})
-      
+      }, () => { this.props.notify(`Added blog with title ${result.title} from author ${result.author}`, 5) })
+
     } catch (err) {
       console.log(err)
       this.setState({ error: "bad request..." })
@@ -122,14 +119,13 @@ class App extends React.Component {
 
   }
 
-  componentDidMount() {
-    console.log(this.props)
-    console.log('getting blogs...')
-    blogService.getAll().then(blogs => {
-      this.setState({ blogs })
-      console.log(blogs)
+  componentDidMount = async () => {
+    await this.props.initializeUsers()
+    console.log('this.props: ',this.props)
+    /*blogService.getAll().then(blogs => {
+    his.setState({ blogs })
     }
-    )
+    )*/
 
     const userJSON = window.localStorage.getItem('loggedUser')
     console.log("userJSON: ", userJSON)
@@ -137,9 +133,7 @@ class App extends React.Component {
     if (userJSON && userJSON !== 'undefined') {
       let user = JSON.parse(userJSON)
       this.setState({ user })
-      console.log("found token: ", user.token)
       blogService.setToken(user.token)
-      console.log('updated Token')
     }
   }
 
@@ -151,7 +145,7 @@ class App extends React.Component {
     if (this.state.user === null) {
       return (
         <div>
-          
+
           <h3 className="error">{this.state.error}</h3>
           <Notification />
           <Togglable buttonText="Login">
@@ -166,13 +160,27 @@ class App extends React.Component {
           <button onClick={this.logout}>logout</button>
           <h3 className="error">{this.state.error}</h3>
           <Notification />
-          <Togglable buttonText="Submit new post">
-            <BlogForm state={this.state} blogInputChangeHandler={this.onBlogInputChange} onBlogSubmit={this.onBlogSubmit} />
-          </Togglable>
-          <h3>Previous blogs: </h3>
-          {this.state.blogs.sort((a, b) => { return b.likes - a.likes }).map(blog =>
-            <Blog key={blog.id.concat(Date.now().toString)} handleDelete={this.deleteHandler} user={this.state.user} blog={blog} />
-          )}
+          <Router>
+            <div>
+              <Route exact path="/" render={() => {
+                return (
+                  <div>
+                    <Togglable buttonText="Submit new post">
+                      <BlogForm state={this.state} blogInputChangeHandler={this.onBlogInputChange} onBlogSubmit={this.onBlogSubmit} />
+                    </Togglable>
+
+                    <h3>Previous blogs: </h3>
+                    {this.state.blogs.sort((a, b) => { return b.likes - a.likes }).map(blog =>
+                      <Blog key={blog.id.concat(Date.now().toString)} handleDelete={this.deleteHandler} user={this.state.user} blog={blog} />
+                    )}
+                  </div>)
+              }} />
+              <Route exact path="/users" render={() => <UserList  />} />
+              <Route exact path="/users/:id" render={() => <div></div>} />
+
+
+            </div>
+          </Router>
 
         </div>
       );
@@ -182,6 +190,7 @@ class App extends React.Component {
 
 // ADD REDUCER OR SOMETHING HERE
 const mapDispatchToProps = {
-  notify
+  notify,
+  initializeUsers
 }
-export default connect(null, mapDispatchToProps)(App)
+export default connect(null, {notify, initializeUsers})(App)

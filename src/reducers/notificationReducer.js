@@ -1,7 +1,7 @@
 const notificationAtStart = "Hallo"
 
 
-const notificationReducer = (store = notificationAtStart, action) => {
+const notificationReducer = (store = "", action) => {
 
     switch (action.type) {
   
