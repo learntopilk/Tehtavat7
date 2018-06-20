@@ -2,17 +2,18 @@ import React from 'react'
 import Blog from './components/Blog'
 import Login from './components/Login'
 import Togglable from './components/Togglable'
-import { BrowserRouter as Router, Route, Link } from 'react-router-dom'
+import { BrowserRouter as Router, Route } from 'react-router-dom'
 import loginService from './services/login'
 import blogService from './services/blogs'
 import BlogForm from './components/BlogForm'
 import { connect } from 'react-redux'
 import Notification from './components/Notification'
-import notificationReducer from './reducers/notificationReducer'
+//import notificationReducer from './reducers/notificationReducer'
 import { notify } from './reducers/notificationReducer'
 import UserList from './components/UserList'
-import userService from './services/users'
-import userReducer, { initializeUsers } from './reducers/userReducer';
+//import userService from './services/users'
+import { initializeUsers } from './reducers/userReducer';
+import User from './components/User'
 
 class App extends React.Component {
   constructor(props) {
@@ -119,13 +120,18 @@ class App extends React.Component {
 
   }
 
+  userById = (id) => {
+
+    return this.props.users.find(u => u.id === id)
+  }
+
   componentDidMount = async () => {
     await this.props.initializeUsers()
-    console.log('this.props: ',this.props)
-    /*blogService.getAll().then(blogs => {
-    his.setState({ blogs })
+    console.log('this.props: ', this.props)
+    blogService.getAll().then(blogs => {
+      this.setState({ blogs })
     }
-    )*/
+    )
 
     const userJSON = window.localStorage.getItem('loggedUser')
     console.log("userJSON: ", userJSON)
@@ -160,23 +166,22 @@ class App extends React.Component {
           <button onClick={this.logout}>logout</button>
           <h3 className="error">{this.state.error}</h3>
           <Notification />
+          <Togglable buttonText="Submit new post">
+            <BlogForm state={this.state} blogInputChangeHandler={this.onBlogInputChange} onBlogSubmit={this.onBlogSubmit} />
+          </Togglable>
           <Router>
             <div>
               <Route exact path="/" render={() => {
                 return (
                   <div>
-                    <Togglable buttonText="Submit new post">
-                      <BlogForm state={this.state} blogInputChangeHandler={this.onBlogInputChange} onBlogSubmit={this.onBlogSubmit} />
-                    </Togglable>
-
                     <h3>Previous blogs: </h3>
                     {this.state.blogs.sort((a, b) => { return b.likes - a.likes }).map(blog =>
                       <Blog key={blog.id.concat(Date.now().toString)} handleDelete={this.deleteHandler} user={this.state.user} blog={blog} />
                     )}
                   </div>)
               }} />
-              <Route exact path="/users" render={() => <UserList  />} />
-              <Route exact path="/users/:id" render={() => <div></div>} />
+              <Route exact path="/users" render={() => <UserList />} />
+              <Route exact path="/users/:id" render={({ match }) => <User user={this.userById(match.params.id)} />} />
 
 
             </div>
@@ -188,9 +193,10 @@ class App extends React.Component {
   }
 }
 
-// ADD REDUCER OR SOMETHING HERE
-const mapDispatchToProps = {
-  notify,
-  initializeUsers
+const mapStateToProps = (state) => {
+  return {
+    users: state.users
+  }
 }
-export default connect(null, {notify, initializeUsers})(App)
+
+export default connect(mapStateToProps, { notify, initializeUsers })(App)

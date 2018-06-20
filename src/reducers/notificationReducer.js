@@ -1,4 +1,4 @@
-const notificationAtStart = "Hallo"
+//const notificationAtStart = "Hallo"
 
 
 const notificationReducer = (store = "", action) => {

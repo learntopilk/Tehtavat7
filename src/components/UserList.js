@@ -1,5 +1,5 @@
 import React from 'react'
-import userService from '../services/users'
+//import userService from '../services/users'
 import { connect } from 'react-redux'
 
 
@@ -18,8 +18,8 @@ const UserList = (props) => {
 
                 {props.users.map(u => {
                     return (
-                        <tr key={JSON.stringify(u)}>
-                            <td>{u.name}      </td>
+                        <tr key={JSON.stringify(u.name)}>
+                            <td><a href={`users/${u.id}`}>{u.name}      </a></td>
                             <td>{u.blogs.length}      </td>
                         </tr>
                     )
