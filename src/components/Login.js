@@ -1,14 +1,20 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
-const Login = ({ state, handleLoginFieldChange, login, visible }) => {
+const Login = ({ state, handleLoginFieldChange, login, visible, history }) => {
     //const hideWhenVisible = { display: visible ? 'none' : '' }
     //const showWhenVisible = { display: visible ? '' : 'none' }
+
+    const onSubmit = (event) => {
+        event.preventDefault()
+        login()
+        history.push("/")
+    }
 
     return (
         <div>
                 <h4>Please log in</h4>
-                <form onSubmit={login}>
+                <form onSubmit={onSubmit}>
                     <div><span>username: <input type="text" name="username" onChange={handleLoginFieldChange} value={state.username} /></span></div>
                     <div><span>password: <input type="password" name="password" onChange={handleLoginFieldChange} value={state.password} /></span></div>
                     <button type="submit">login</button>                </form>

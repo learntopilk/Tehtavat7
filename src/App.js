@@ -12,27 +12,29 @@ import Notification from './components/Notification'
 import { notify } from './reducers/notificationReducer'
 import UserList from './components/UserList'
 //import userService from './services/users'
-import { initializeUsers } from './reducers/userReducer';
+import { initializeUsers } from './reducers/userReducer'
+import { initializeBlogs } from './reducers/blogReducer'
 import User from './components/User'
 
 class App extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      blogs: [],
+      //blogs: [],
       username: '',
       password: '',
       token: null,
       error: '',
       user: null,
-      blogtitle: '',
-      blogauthor: '',
-      blogurl: '',
+      //blogtitle: '',
+      //blogauthor: '',
+      //blogurl: '',
       loginVisible: false
 
     }
 
     this.deleteHandler = (id) => {
+      /*
       let blogsToUpdate = []
       for (let i = 0; i < this.state.blogs.length; i++) {
         if (this.state.blogs[i].id === id) {
@@ -41,6 +43,7 @@ class App extends React.Component {
         }
       }
       this.setState({ blogs: blogsToUpdate })
+      */
     }
 
 
@@ -60,6 +63,7 @@ class App extends React.Component {
       window.localStorage.setItem('loggedUser', JSON.stringify(user))
       blogService.setToken(user.token)
 
+      this.props.history.push("/")
 
     } catch (err) {
       console.log(err)
@@ -121,20 +125,25 @@ class App extends React.Component {
   }
 
   userById = (id) => {
-
     return this.props.users.find(u => u.id === id)
+  }
+
+  blogById = (id) => {
+    return this.props.blogs.find(b => b.id === id)
   }
 
   componentDidMount = async () => {
     await this.props.initializeUsers()
-    console.log('this.props: ', this.props)
-    blogService.getAll().then(blogs => {
+    await this.props.initializeBlogs()
+    console.log("after init: ", this.props)
+    //console.log('this.props: ', this.props)
+   /* blogService.getAll().then(blogs => {
       this.setState({ blogs })
     }
-    )
+    )*/
 
     const userJSON = window.localStorage.getItem('loggedUser')
-    console.log("userJSON: ", userJSON)
+    //console.log("userJSON: ", userJSON)
 
     if (userJSON && userJSON !== 'undefined') {
       let user = JSON.parse(userJSON)
@@ -146,7 +155,7 @@ class App extends React.Component {
   render() {
 
 
-    console.log('user: ', this.state.user)
+    //console.log('user: ', this.state.user)
 
     if (this.state.user === null) {
       return (
@@ -175,13 +184,14 @@ class App extends React.Component {
                 return (
                   <div>
                     <h3>Previous blogs: </h3>
-                    {this.state.blogs.sort((a, b) => { return b.likes - a.likes }).map(blog =>
-                      <Blog key={blog.id.concat(Date.now().toString)} handleDelete={this.deleteHandler} user={this.state.user} blog={blog} />
+                    {this.props.blogs.sort((a, b) => { return b.likes - a.likes }).map(blog =>
+                      <h3 key={blog.id} className="blogLink"><a href={`/blogs/${blog.id}`}>{blog.title}</a></h3>
                     )}
                   </div>)
               }} />
               <Route exact path="/users" render={() => <UserList />} />
               <Route exact path="/users/:id" render={({ match }) => <User user={this.userById(match.params.id)} />} />
+              <Route exact path="/blogs/:id" render ={({ match }) => <Blog blog={this.blogById(match.params.id)}  /> }/>
 
 
             </div>
@@ -193,10 +203,17 @@ class App extends React.Component {
   }
 }
 
+/* 
+Dumped old blog key for safety:
+<Blog key={blog.id.concat(Date.now().toString)} handleDelete={this.deleteHandler} user={this.state.user} blog={blog} />
+
+*/
+
 const mapStateToProps = (state) => {
   return {
-    users: state.users
+    users: state.users,
+    blogs: state.blogs
   }
 }
 
-export default connect(mapStateToProps, { notify, initializeUsers })(App)
+export default connect(mapStateToProps, { notify, initializeUsers, initializeBlogs })(App)
