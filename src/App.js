@@ -2,19 +2,19 @@ import React from 'react'
 import Blog from './components/Blog'
 import Login from './components/Login'
 import Togglable from './components/Togglable'
-import { BrowserRouter as Router, Route } from 'react-router-dom'
-import loginService from './services/login'
+import { BrowserRouter as Router, Route, Link } from 'react-router-dom'
+//import loginService from './services/login'
 import blogService from './services/blogs'
 import BlogForm from './components/BlogForm'
 import { connect } from 'react-redux'
 import Notification from './components/Notification'
-//import notificationReducer from './reducers/notificationReducer'
 import { notify } from './reducers/notificationReducer'
 import UserList from './components/UserList'
-//import userService from './services/users'
 import { initializeUsers } from './reducers/userReducer'
 import { initializeBlogs } from './reducers/blogReducer'
+import { resetLoginInfo } from './reducers/loginInfoReducer'
 import User from './components/User'
+import loggedInUserReducer, { continueSession, initializeUser, logout } from './reducers/loggedInUserReducer';
 
 class App extends React.Component {
   constructor(props) {
@@ -26,9 +26,9 @@ class App extends React.Component {
       token: null,
       error: '',
       user: null,
-      //blogtitle: '',
-      //blogauthor: '',
-      //blogurl: '',
+      blogtitle: '',
+      blogauthor: '',
+      blogurl: '',
       loginVisible: false
 
     }
@@ -50,33 +50,6 @@ class App extends React.Component {
 
   }
 
-  login = async (event) => {
-    event.preventDefault()
-
-    try {
-      const userObj = { username: this.state.username, password: this.state.password }
-      const user = await loginService.login(userObj)
-
-      this.props.notify(`Welcome, ${user.username}!`, 5)
-      this.setState({ username: '', password: '', user })
-
-      window.localStorage.setItem('loggedUser', JSON.stringify(user))
-      blogService.setToken(user.token)
-
-      this.props.history.push("/")
-
-    } catch (err) {
-      console.log(err)
-      this.setState({ error: 'Käyttäjätunnus tahi salasana onpi virheellinen' })
-      setTimeout(() => { this.setState({ error: '' }) }, 5000)
-    }
-  }
-
-  handleLoginFieldChange = (event) => {
-    event.preventDefault()
-    this.setState({ [event.target.name]: event.target.value })
-  }
-
   toggleLoginVisibility = () => {
 
     this.setState({ loginVisible: !this.state.loginVisible })
@@ -84,9 +57,8 @@ class App extends React.Component {
   }
 
   logout = () => {
-    window.localStorage.clear()
     blogService.setToken(null)
-    this.setState({ user: null, username: '', password: '' })
+    this.props.logout()
   }
 
   onBlogInputChange = (event) => {
@@ -135,85 +107,129 @@ class App extends React.Component {
   componentDidMount = async () => {
     await this.props.initializeUsers()
     await this.props.initializeBlogs()
+    await this.props.initializeUser()
+    this.props.resetLoginInfo()
     console.log("after init: ", this.props)
-    //console.log('this.props: ', this.props)
-   /* blogService.getAll().then(blogs => {
-      this.setState({ blogs })
-    }
-    )*/
 
     const userJSON = window.localStorage.getItem('loggedUser')
-    //console.log("userJSON: ", userJSON)
+    console.log("loggedUser: ", userJSON)
 
-    if (userJSON && userJSON !== 'undefined') {
+    /*
+    if (userJSON && userJSON !== 'undefined' && (userJSON !== null)) {
       let user = JSON.parse(userJSON)
-      this.setState({ user })
-      blogService.setToken(user.token)
-    }
+      if (user === null) {
+        return
+      } else {
+        //this.setState({ user })
+        console.log("user at token retrieval: ", user)
+        await continueSession(user)
+        blogService.setToken(user.token)
+      }
+  }*/
+
+    console.log("after componentDidMount: ", this.props)
   }
 
   render() {
 
 
-    //console.log('user: ', this.state.user)
+    console.log('user: ', this.props.user)
 
-    if (this.state.user === null) {
-      return (
+    /*    if (this.state.user === null) {
+          return (
+            <Router>
+              <div>
+                <div>
+                  <Link to="/">Home</Link> &nbsp;
+                <Link to="/users">Users</Link>
+                </div>
+    
+                <h3>Sign-in</h3>
+    
+                <h3 className="error">{this.state.error}</h3>
+                <Route exact path="/" render={({ history }) => {
+                  return (
+                    <div>
+                      <Notification />
+                      <Togglable buttonText="Login">
+                        <Login history={history} visible={this.state.visible} />
+                      </Togglable>
+                    </div>
+                  )
+                }} />
+                <Route exact path="/r" render={({ history }) => {
+                  return (
+                    <div>Rubal
+                    </div>
+                  )
+                }} />
+    
+    
+              </div>
+            </Router>
+    
+          )
+        } else {*/
+    return (
+      <Router>
         <div>
-
-          <h3 className="error">{this.state.error}</h3>
-          <Notification />
-          <Togglable buttonText="Login">
-            <Login login={this.login} handleLoginFieldChange={this.handleLoginFieldChange} state={this.state} visible={this.state.visible} />
-          </Togglable>
-        </div>
-      )
-    } else {
-      return (
-        <div>
+          <div>
+            <Link to="/">Home</Link> &nbsp;
+            <Link to="/users">Users</Link>
+          </div>
           <h2>blogs</h2>
-          <button onClick={this.logout}>logout</button>
           <h3 className="error">{this.state.error}</h3>
           <Notification />
-          <Togglable buttonText="Submit new post">
-            <BlogForm state={this.state} blogInputChangeHandler={this.onBlogInputChange} onBlogSubmit={this.onBlogSubmit} />
-          </Togglable>
-          <Router>
-            <div>
-              <Route exact path="/" render={() => {
+          <div>
+            <Route exact path="/" render={({ history }) => {
+              if (this.props.user === null || this.props.user.username === "") {
                 return (
                   <div>
+                    <Notification />
+                    <Togglable buttonText="Login">
+                      <Login history={history} visible={this.state.visible} />
+                    </Togglable>
+                  </div>
+                )
+              } else {
+                return (
+                  <div>
+                    <button onClick={this.logout}>logout</button>
+                    <Togglable buttonText="Submit new post">
+                      <BlogForm state={this.state} blogInputChangeHandler={this.onBlogInputChange} onBlogSubmit={this.onBlogSubmit} />
+                    </Togglable>
                     <h3>Previous blogs: </h3>
                     {this.props.blogs.sort((a, b) => { return b.likes - a.likes }).map(blog =>
                       <h3 key={blog.id} className="blogLink"><a href={`/blogs/${blog.id}`}>{blog.title}</a></h3>
                     )}
                   </div>)
-              }} />
-              <Route exact path="/users" render={() => <UserList />} />
-              <Route exact path="/users/:id" render={({ match }) => <User user={this.userById(match.params.id)} />} />
-              <Route exact path="/blogs/:id" render ={({ match }) => <Blog blog={this.blogById(match.params.id)}  /> }/>
-
-
-            </div>
-          </Router>
-
+              }
+            }} />
+            <Route exact path="/users" render={() => <UserList />} />
+            <Route exact path="/users/:id" render={({ match }) => <User user={this.userById(match.params.id)} />} />
+            <Route exact path="/blogs/:id" render={({ match }) => <Blog blog={this.blogById(match.params.id)} />} />
+          </div>
         </div>
-      );
-    }
+      </Router>
+
+    )
+    //   }
   }
 }
 
-/* 
+/*
 Dumped old blog key for safety:
 <Blog key={blog.id.concat(Date.now().toString)} handleDelete={this.deleteHandler} user={this.state.user} blog={blog} />
 
-*/
+      */
 
 const mapStateToProps = (state) => {
   return {
     users: state.users,
-    blogs: state.blogs
+    blogs: state.blogs,
+    user: state.user
+
   }
 }
 
-export default connect(mapStateToProps, { notify, initializeUsers, initializeBlogs })(App)
+export default connect(mapStateToProps, { notify, initializeUsers, initializeBlogs, resetLoginInfo, continueSession, initializeUser, logout })(App)
