@@ -1,11 +1,7 @@
 import React from 'react'
-//import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
-import { BrowserRouter, withRouter } from 'react-router-dom'
-//import loginService from '../services/login'
-import loggedInUserReducer, { login, reset } from '../reducers/loggedInUserReducer'
-import loginInfoReducer, {updateLoginInfo, resetLoginInfo} from '../reducers/loginInfoReducer'
-import blogService from '../services/blogs'
+import { login } from '../reducers/loggedInUserReducer'
+import {updateLoginInfo, resetLoginInfo} from '../reducers/loginInfoReducer'
 import { notify } from '../reducers/notificationReducer'
 
 class Login extends React.Component {
@@ -24,17 +20,13 @@ class Login extends React.Component {
     startLogin = async (event) => {
 
         event.preventDefault()
-       // console.log(this.props)
         try {
             console.log("logininfo: ", this.props.loginInfo)
             const userObj = this.props.loginInfo
             let c = await this.props.login(userObj)
 
-            console.log("props:", this.props)
-            console.log("logged in user ", this.props.user)
-            
-            //c = await this.props.notify(`Welcome, ${this.props.user.username}!`, 5)
-            
+            await this.props.resetLoginInfo();
+                        
             this.props.history.push("/")
 
 
@@ -62,8 +54,6 @@ const mapStateToProps = (store) => {
     console.log("store:", store)
     return ({
         user: store.user,
-        //username: state.username,
-       // password: state.password,
         loginInfo: store.loginInfo,
         blogs: store.blogs
     })

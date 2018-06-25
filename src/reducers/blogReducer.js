@@ -23,7 +23,12 @@ export const initializeBlogs = () => {
 }
 
 export const createNewBlog = (blog) => {
-
+    return async (dispatch) => {
+        dispatch({
+            type: 'CREATE_BLOG',
+            blog
+        })
+    }
 }
 
 export default blogReducer

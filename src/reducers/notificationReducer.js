@@ -4,20 +4,19 @@
 const notificationReducer = (store = "", action) => {
 
     switch (action.type) {
-  
-    case "SET":
-      return action.content
-    case "CREATE":
-      const retu = `You created "${action.content}"`
-      return retu
-    case "RESET":
-      return ""
-    default:
-      return store
-  
-  
+        case "SET":
+            return action.content
+        case "CREATE":
+            const retu = `You created "${action.content}"`
+            return retu
+        case "RESET":
+            return ""
+        default:
+            return store
+
+
     }
-  }
+}
 
 export const notify = (message, timeInSeconds) => {
     return async (dispatch) => {

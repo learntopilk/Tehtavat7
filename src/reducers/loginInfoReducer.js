@@ -10,7 +10,7 @@ const loginInfoReducer = (store = emptyLoginInfo, action) => {
         case 'RESET_LINFO':
             return action.data
         default:
-            return emptyLoginInfo
+            return store
     }
 }
 
@@ -25,6 +25,7 @@ export const updateLoginInfo = (userInfoObj) => {
 
 export const resetLoginInfo = () => {
     return (dispatch) => {
+        console.log("Resetting login info")
         dispatch({
             type: 'RESET_LINFO',
             data: emptyLoginInfo

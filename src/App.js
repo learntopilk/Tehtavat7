@@ -3,7 +3,6 @@ import Blog from './components/Blog'
 import Login from './components/Login'
 import Togglable from './components/Togglable'
 import { BrowserRouter as Router, Route, Link } from 'react-router-dom'
-//import loginService from './services/login'
 import blogService from './services/blogs'
 import BlogForm from './components/BlogForm'
 import { connect } from 'react-redux'
@@ -11,26 +10,19 @@ import Notification from './components/Notification'
 import { notify } from './reducers/notificationReducer'
 import UserList from './components/UserList'
 import { initializeUsers } from './reducers/userReducer'
-import { initializeBlogs } from './reducers/blogReducer'
+import { initializeBlogs, createNewBlog } from './reducers/blogReducer'
 import { resetLoginInfo } from './reducers/loginInfoReducer'
 import User from './components/User'
-import loggedInUserReducer, { continueSession, initializeUser, logout } from './reducers/loggedInUserReducer';
+import { continueSession, initializeUser, logout } from './reducers/loggedInUserReducer';
 
 class App extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      //blogs: [],
-      username: '',
-      password: '',
-      token: null,
-      error: '',
-      user: null,
       blogtitle: '',
       blogauthor: '',
       blogurl: '',
       loginVisible: false
-
     }
 
     this.deleteHandler = (id) => {
@@ -51,19 +43,21 @@ class App extends React.Component {
   }
 
   toggleLoginVisibility = () => {
-
     this.setState({ loginVisible: !this.state.loginVisible })
-
   }
 
   logout = () => {
     blogService.setToken(null)
+    console.log("logging out...")
     this.props.logout()
+    console.log("Store after logout: ", this.props)
+    //this.props.history.push("/")
   }
 
   onBlogInputChange = (event) => {
     event.preventDefault()
     this.setState({ [event.target.name]: event.target.value })
+    console.log(`${[event.target.name]}: ${event.target.value}`)
   }
 
 
@@ -78,11 +72,14 @@ class App extends React.Component {
 
     try {
       const result = await blogService.createBlogPost(blog)
+      console.log("Result of blog post creation: ", result)
 
       let moddedRes = result
       moddedRes.user = this.state.user
+
+      await this.props.createNewBlog(result)
       this.setState({
-        blogs: this.state.blogs.concat(result),
+       // blogs: this.state.blogs.concat(result),
         blogtitle: '',
         blogurl: '',
         blogauthor: ''
@@ -90,10 +87,8 @@ class App extends React.Component {
 
     } catch (err) {
       console.log(err)
-      this.setState({ error: "bad request..." })
-      setTimeout(() => { this.setState({ error: null }) }, 5000)
+      this.props.notify(`Bar request; something is wrong with your blog, dude`, 5)
     }
-
   }
 
   userById = (id) => {
@@ -108,68 +103,22 @@ class App extends React.Component {
     await this.props.initializeUsers()
     await this.props.initializeBlogs()
     await this.props.initializeUser()
-    this.props.resetLoginInfo()
+    await this.props.resetLoginInfo()
+    if (this.props.user) {
+      await blogService.setToken(this.props.user.token)
+    }
+
     console.log("after init: ", this.props)
 
     const userJSON = window.localStorage.getItem('loggedUser')
     console.log("loggedUser: ", userJSON)
-
-    /*
-    if (userJSON && userJSON !== 'undefined' && (userJSON !== null)) {
-      let user = JSON.parse(userJSON)
-      if (user === null) {
-        return
-      } else {
-        //this.setState({ user })
-        console.log("user at token retrieval: ", user)
-        await continueSession(user)
-        blogService.setToken(user.token)
-      }
-  }*/
-
     console.log("after componentDidMount: ", this.props)
   }
 
   render() {
 
-
     console.log('user: ', this.props.user)
 
-    /*    if (this.state.user === null) {
-          return (
-            <Router>
-              <div>
-                <div>
-                  <Link to="/">Home</Link> &nbsp;
-                <Link to="/users">Users</Link>
-                </div>
-    
-                <h3>Sign-in</h3>
-    
-                <h3 className="error">{this.state.error}</h3>
-                <Route exact path="/" render={({ history }) => {
-                  return (
-                    <div>
-                      <Notification />
-                      <Togglable buttonText="Login">
-                        <Login history={history} visible={this.state.visible} />
-                      </Togglable>
-                    </div>
-                  )
-                }} />
-                <Route exact path="/r" render={({ history }) => {
-                  return (
-                    <div>Rubal
-                    </div>
-                  )
-                }} />
-    
-    
-              </div>
-            </Router>
-    
-          )
-        } else {*/
     return (
       <Router>
         <div>
@@ -178,24 +127,14 @@ class App extends React.Component {
             <Link to="/users">Users</Link>
           </div>
           <h2>blogs</h2>
-          <h3 className="error">{this.state.error}</h3>
           <Notification />
           <div>
             <Route exact path="/" render={({ history }) => {
-              if (this.props.user === null || this.props.user.username === "") {
-                return (
-                  <div>
-                    <Notification />
-                    <Togglable buttonText="Login">
-                      <Login history={history} visible={this.state.visible} />
-                    </Togglable>
-                  </div>
-                )
-              } else {
+              if (this.props.user && this.props.user.token) {
                 return (
                   <div>
                     <button onClick={this.logout}>logout</button>
-                    <Togglable buttonText="Submit new post">
+                    <Togglable buttonText={`Create new Blog Post (Fake news)`}>
                       <BlogForm state={this.state} blogInputChangeHandler={this.onBlogInputChange} onBlogSubmit={this.onBlogSubmit} />
                     </Togglable>
                     <h3>Previous blogs: </h3>
@@ -203,6 +142,14 @@ class App extends React.Component {
                       <h3 key={blog.id} className="blogLink"><a href={`/blogs/${blog.id}`}>{blog.title}</a></h3>
                     )}
                   </div>)
+              } else {
+                return (
+                  <div>
+                    <Togglable buttonText={`LOGin`}>
+                      <Login history={history} />
+                    </Togglable>
+                  </div>
+                )
               }
             }} />
             <Route exact path="/users" render={() => <UserList />} />
@@ -213,23 +160,27 @@ class App extends React.Component {
       </Router>
 
     )
-    //   }
   }
 }
 
-/*
-Dumped old blog key for safety:
-<Blog key={blog.id.concat(Date.now().toString)} handleDelete={this.deleteHandler} user={this.state.user} blog={blog} />
 
-      */
-
-const mapStateToProps = (state) => {
+const mapStateToProps = (store) => {
   return {
-    users: state.users,
-    blogs: state.blogs,
-    user: state.user
-
+    users: store.users,
+    blogs: store.blogs,
+    user: store.user
   }
 }
 
-export default connect(mapStateToProps, { notify, initializeUsers, initializeBlogs, resetLoginInfo, continueSession, initializeUser, logout })(App)
+const mapDispatchToProps = {
+  notify,
+  initializeUsers,
+  initializeBlogs,
+  resetLoginInfo,
+  continueSession,
+  initializeUser,
+  logout,
+  createNewBlog
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(App)

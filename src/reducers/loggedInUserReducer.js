@@ -1,9 +1,7 @@
 import loginService from '../services/login'
 import blogService from '../services/blogs'
-import { initializeUsers } from './userReducer';
 
-
-const loggedInUserReducer = (state = null, action) => {
+const loggedInUserReducer = (state = {}, action) => {
     switch(action.type) {
         case 'LOGIN':
             console.log("user at reducer: ", action.user)
@@ -16,9 +14,8 @@ const loggedInUserReducer = (state = null, action) => {
         case 'LOGOUT':
             return null
         default:
-            console.log("Default at user: ", action)
-            return state || null
-
+            console.log("Default at user: ")
+            return state
     }
 }
 
@@ -31,13 +28,10 @@ export const login = (userTryingToLogin) => {
 
         await window.localStorage.setItem('loggedUser', JSON.stringify(user))
 
-        //console.log("loggedUser in reducer: ", window.localStorage.getItem('loggedUser'))
-        //console.log("user at userReducer: ", user)
         dispatch({
             type: 'LOGIN',
             user
         })
-
     }
 }
 

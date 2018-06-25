@@ -1,7 +1,7 @@
 import React from 'react'
 
 const Blog = ({ blog }) => {
-  if (!blog.title) {
+  if (!blog) {
     return <h4>No such blog found...</h4>
   }
   return (
