@@ -13,7 +13,7 @@ const Blog = ({ blog }) => {
       <p>Submitted by {!blog.user ? 'Unknown' : blog.user.name}</p>
       <h4>Comments</h4>
       <ul>
-      { blog.comments.map(c => { return(<li>{c}</li>) }) }
+        { blog.comments.map(c => { return (<li>{c}</li>) }) }
       </ul>
     </div>
   )

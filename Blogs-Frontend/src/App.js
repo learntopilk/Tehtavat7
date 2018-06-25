@@ -14,6 +14,7 @@ import { initializeBlogs, createNewBlog } from './reducers/blogReducer'
 import { resetLoginInfo } from './reducers/loginInfoReducer'
 import User from './components/User'
 import { continueSession, initializeUser, logout } from './reducers/loggedInUserReducer';
+import Navigation from './components/Navigation'
 
 class App extends React.Component {
   constructor(props) {
@@ -122,15 +123,13 @@ class App extends React.Component {
         <div>
           <h2>blogs</h2>
           <Notification />
+          <Navigation user={this.props.user} />
           <div>
             <Route exact path="/" render={({ history }) => {
               if (this.props.user && this.props.user.token) {
                 return (
                   <div>
                     <div>
-                      <Link to="/">Home</Link> &nbsp;
-                      <Link to="/users">Users</Link> &nbsp;
-                      <span><em>{this.props.user.username} logged in</em></span> &nbsp;
                       <button onClick={this.logout}>logout</button> &nbsp;
                     </div>
                     <Togglable buttonText={`Create new Blog Post (Fake news)`}>
@@ -144,10 +143,6 @@ class App extends React.Component {
               } else {
                 return (
                   <div>
-                    <Link to="/">Home</Link> &nbsp;
-                    <Link to="/users">Users</Link> &nbsp;
-                    <span><em>User not logged in</em></span> &nbsp;
-
                     <Togglable buttonText={`LOGin`}>
                       <Login history={history} />
                     </Togglable>
