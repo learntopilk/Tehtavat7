@@ -79,7 +79,7 @@ class App extends React.Component {
 
       await this.props.createNewBlog(result)
       this.setState({
-       // blogs: this.state.blogs.concat(result),
+        // blogs: this.state.blogs.concat(result),
         blogtitle: '',
         blogurl: '',
         blogauthor: ''
@@ -122,10 +122,6 @@ class App extends React.Component {
     return (
       <Router>
         <div>
-          <div>
-            <Link to="/">Home</Link> &nbsp;
-            <Link to="/users">Users</Link>
-          </div>
           <h2>blogs</h2>
           <Notification />
           <div>
@@ -133,7 +129,12 @@ class App extends React.Component {
               if (this.props.user && this.props.user.token) {
                 return (
                   <div>
-                    <button onClick={this.logout}>logout</button>
+                    <div>
+                      <Link to="/">Home</Link> &nbsp;
+                      <Link to="/users">Users</Link> &nbsp;
+                      <span><em>{this.props.user.username} logged in</em></span> &nbsp;
+                      <button onClick={this.logout}>logout</button> &nbsp;
+                    </div>
                     <Togglable buttonText={`Create new Blog Post (Fake news)`}>
                       <BlogForm state={this.state} blogInputChangeHandler={this.onBlogInputChange} onBlogSubmit={this.onBlogSubmit} />
                     </Togglable>
@@ -145,6 +146,10 @@ class App extends React.Component {
               } else {
                 return (
                   <div>
+                    <Link to="/">Home</Link> &nbsp;
+                    <Link to="/users">Users</Link> &nbsp;
+                    <span><em>User not logged in</em></span> &nbsp;
+
                     <Togglable buttonText={`LOGin`}>
                       <Login history={history} />
                     </Togglable>
