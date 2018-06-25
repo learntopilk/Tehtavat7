@@ -10,7 +10,8 @@ const formatBlogPost = (blog) => {
     url: blog.url,
     likes: blog.likes,
     user: blog.user,
-    id: blog._id
+    id: blog._id,
+    comments: blog.comments
   }
 }
 
@@ -152,6 +153,34 @@ blogsRouter.put('/:id', async (request, response) => {
       return response.status(404)
     })
   response.status(200).json(formatBlogPost(updatedB))
+
+})
+
+blogsRouter.get('/:id/comments', async (req, res) => {
+  const comments = await Blog.find({ _id: req.params.id })
+
+  if (comments === null || comments === undefined) {
+    return res.status(200).json(null)
+  }
+
+  res.status(200).json(comments)
+})
+
+blogsRouter.post('/:id/comments', async (req, res) => {
+
+  if(!req.body.comment || req.body.comment === '') {
+    return res.status(401).json({ error: 'bad request, Either the comment is missing or is empty'})
+  }
+
+  console.log('req.body.comment: ', req.body.comment)
+  try {
+    const b = await Blog.findOneAndUpdate({ _id: req.params.id }, { $push: { comments: req.body.comment } })
+    return res.status(201).json(b)
+  } catch (err) {
+    console.log(err)
+    return res.status(400).json({ error: 'error while saving comment' })
+  }
+
 
 })
 

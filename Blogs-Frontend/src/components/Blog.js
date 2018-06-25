@@ -11,6 +11,10 @@ const Blog = ({ blog }) => {
       <p>Address: <a href={blog.url}>{blog.url}</a></p>
       <p>Likes: {blog.likes}</p>
       <p>Submitted by {!blog.user ? 'Unknown' : blog.user.name}</p>
+      <h4>Comments</h4>
+      <ul>
+      { blog.comments.map(c => { return(<li>{c}</li>) }) }
+      </ul>
     </div>
   )
 }
