@@ -1,1 +1,1 @@
-## bloglist frontend
+## bloglist frontend: Fullstack-kurssin 7. osan tehtävien frontend
