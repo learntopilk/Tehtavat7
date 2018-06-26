@@ -15,7 +15,7 @@ class Blog extends React.Component {
   }
 
   render() {
-    console.log("Rendered")
+    console.log('Rendered')
     const blog = this.props.blog
     if (!blog) {
       return <h4>No such blog found...</h4>

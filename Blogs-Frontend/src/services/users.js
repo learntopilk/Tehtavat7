@@ -4,8 +4,8 @@ const baseUrl = '/api/users'
 
 
 const getAllUsers = async () => {
-    const res = await axios.get(baseUrl)
-    return res.data
+  const res = await axios.get(baseUrl)
+  return res.data
 }
 
 

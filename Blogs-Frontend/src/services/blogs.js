@@ -5,9 +5,9 @@ const baseUrl = '/api/blogs'
 let token = null
 
 const setToken = (newToken) => {
-  console.log("setting token...", newToken)
-  token = `bearer ${newToken}`;
-  console.log("token set: ", token)
+  console.log('setting token...', newToken)
+  token = `bearer ${newToken}`
+  console.log('token set: ', token)
 }
 const getAll = () => {
   const request = axios.get(baseUrl)
@@ -15,12 +15,12 @@ const getAll = () => {
 }
 
 const createBlogPost = async (blogPost) => {
-  console.log("creating...", token)
+  console.log('creating...', token)
   const config = {
-    headers: {'authorization': token}
+    headers: { 'authorization': token }
   }
 
-  console.log("config: ", config)
+  console.log('config: ', config)
   const response = await axios.post(baseUrl, blogPost, config)
   return response.data
 }
@@ -30,7 +30,7 @@ const updateBlogPost = async (blogPost) => {
   console.log('updating...')
 
   const config = {
-    headers: {'authorization': token}
+    headers: { 'authorization': token }
   }
 
   const response = await axios.put(`${baseUrl}/${blogPost.id}`, blogPost, config)
@@ -42,7 +42,7 @@ const removeBlogPost = async (id) => {
   console.log('Deleting blog post ', id)
 
   const config = {
-    headers: {'authorization': token}
+    headers: { 'authorization': token }
   }
 
   const response = await axios.delete(`${baseUrl}/${id}`, config)
@@ -50,9 +50,9 @@ const removeBlogPost = async (id) => {
 }
 
 const addCommentToPost = async (id, comment) => {
-  console.log("comment: ", comment)
+  console.log('comment: ', comment)
   const response = await axios.post(`${baseUrl}/${id}/comments`, comment)
-  console.log("response: ", response)
+  console.log('response: ', response)
   return response.data
 }
 

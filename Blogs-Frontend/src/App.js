@@ -13,9 +13,10 @@ import { initializeUsers } from './reducers/userReducer'
 import { initializeBlogs, createNewBlog, updateBlog } from './reducers/blogReducer'
 import { resetLoginInfo } from './reducers/loginInfoReducer'
 import User from './components/User'
-import { continueSession, initializeUser, logout } from './reducers/loggedInUserReducer';
+import { continueSession, initializeUser, logout } from './reducers/loggedInUserReducer'
 import Navigation from './components/Navigation'
-import { updateComment, resetComment } from './reducers/newCommentReducer';
+import { resetComment } from './reducers/newCommentReducer'
+import { Table } from 'react-bootstrap'
 
 class App extends React.Component {
   constructor(props) {
@@ -50,9 +51,9 @@ class App extends React.Component {
 
   logout = () => {
     blogService.setToken(null)
-    console.log("logging out...")
+    console.log('logging out...')
     this.props.logout()
-    console.log("Store after logout: ", this.props)
+    console.log('Store after logout: ', this.props)
   }
 
   onBlogInputChange = (event) => {
@@ -85,7 +86,7 @@ class App extends React.Component {
 
     } catch (err) {
       console.log(err)
-      this.props.notify(`Bar request; something is wrong with your blog, dude`, 5)
+      this.props.notify('Bar request; something is wrong with your blog, dude', 5)
     }
   }
 
@@ -95,13 +96,13 @@ class App extends React.Component {
         comment: this.props.newComment
       }
       const res = await blogService.addCommentToPost(id, comm)
-      console.log("res: ", res)
+      console.log('res: ', res)
       await this.props.updateBlog(res)
       this.props.notify(`Comment "${res.comments[res.comments.length - 1]}" added to blog "${res.title}"`, 5)
       this.props.resetComment()
     } catch (err) {
       console.log(err)
-      this.props.notify(`Ongelma kommentin tallentamisessa`, 5)
+      this.props.notify('Ongelma kommentin tallentamisessa', 5)
     }
   }
 
@@ -122,8 +123,8 @@ class App extends React.Component {
       await blogService.setToken(this.props.user.token)
     }
 
-    const userJSON = window.localStorage.getItem('loggedUser')
-    console.log("after componentDidMount: ", this.props)
+    //const userJSON = window.localStorage.getItem('loggedUser')
+    console.log('after componentDidMount: ', this.props)
   }
 
   render() {
@@ -131,7 +132,7 @@ class App extends React.Component {
 
     return (
       <Router>
-        <div>
+        <div className="container">
           <h2>blogs</h2>
           <Notification />
           <Navigation user={this.props.user} />
@@ -143,18 +144,26 @@ class App extends React.Component {
                     <div>
                       <button onClick={this.logout}>logout</button> &nbsp;
                     </div>
-                    <Togglable buttonText={`Create new Blog Post (Fake news)`}>
+                    <Togglable buttonText={'Create new Blog Post (Fake news)'}>
                       <BlogForm state={this.state} blogInputChangeHandler={this.onBlogInputChange} onBlogSubmit={this.onBlogSubmit} />
                     </Togglable>
                     <h3>Previous blogs: </h3>
-                    {this.props.blogs.sort((a, b) => { return b.likes - a.likes }).map(blog =>
-                      <h3 key={blog.id} className="blogLink"><a href={`/blogs/${blog.id}`}>{blog.title}</a></h3>
-                    )}
+                    <Table striped>
+                      <tbody>
+                        {this.props.blogs.sort((a, b) => { return b.likes - a.likes }).map(blog =>
+                          <tr key={blog.id} className="blogLink">
+                            <td>
+                              <a href={`/blogs/${blog.id}`}>{blog.title}</a>
+                            </td>
+                          </tr>
+                        )}
+                      </tbody>
+                    </Table>
                   </div>)
               } else {
                 return (
                   <div>
-                    <Togglable buttonText={`LOGin`}>
+                    <Togglable buttonText={'LOGin'}>
                       <Login history={history} />
                     </Togglable>
                   </div>
