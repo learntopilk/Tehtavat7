@@ -9,7 +9,7 @@ const notificationReducer = (store = "", action) => {
         case "CREATE":
             const retu = `You created "${action.content}"`
             return retu
-        case "RESET":
+        case "RESET_NOTIFICATION":
             return ""
         default:
             return store
@@ -26,7 +26,7 @@ export const notify = (message, timeInSeconds) => {
         })
         setTimeout(() => {
             dispatch({
-                type: "RESET"
+                type: "RESET_NOTIFICATION"
             })
         }, timeInSeconds * 1000)
     }

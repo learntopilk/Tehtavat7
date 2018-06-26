@@ -97,6 +97,7 @@ class App extends React.Component {
       const res = await blogService.addCommentToPost(id, comm)
       console.log("res: ", res)
       await this.props.updateBlog(res)
+      this.props.notify(`Comment "${res.comments[res.comments.length - 1]}" added to blog "${res.title}"`, 5)
       this.props.resetComment()
     } catch (err) {
       console.log(err)
