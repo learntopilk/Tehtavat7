@@ -10,11 +10,12 @@ import Notification from './components/Notification'
 import { notify } from './reducers/notificationReducer'
 import UserList from './components/UserList'
 import { initializeUsers } from './reducers/userReducer'
-import { initializeBlogs, createNewBlog } from './reducers/blogReducer'
+import { initializeBlogs, createNewBlog, updateBlog } from './reducers/blogReducer'
 import { resetLoginInfo } from './reducers/loginInfoReducer'
 import User from './components/User'
 import { continueSession, initializeUser, logout } from './reducers/loggedInUserReducer';
 import Navigation from './components/Navigation'
+import { updateComment, resetComment } from './reducers/newCommentReducer';
 
 class App extends React.Component {
   constructor(props) {
@@ -52,13 +53,11 @@ class App extends React.Component {
     console.log("logging out...")
     this.props.logout()
     console.log("Store after logout: ", this.props)
-    //this.props.history.push("/")
   }
 
   onBlogInputChange = (event) => {
     event.preventDefault()
     this.setState({ [event.target.name]: event.target.value })
-    console.log(`${[event.target.name]}: ${event.target.value}`)
   }
 
 
@@ -73,7 +72,6 @@ class App extends React.Component {
 
     try {
       const result = await blogService.createBlogPost(blog)
-      console.log("Result of blog post creation: ", result)
 
       let moddedRes = result
       moddedRes.user = this.state.user
@@ -88,6 +86,21 @@ class App extends React.Component {
     } catch (err) {
       console.log(err)
       this.props.notify(`Bar request; something is wrong with your blog, dude`, 5)
+    }
+  }
+
+  addNewComment = async (id) => {
+    try {
+      const comm = {
+        comment: this.props.newComment
+      }
+      const res = await blogService.addCommentToPost(id, comm)
+      console.log("res: ", res)
+      await this.props.updateBlog(res)
+      this.props.resetComment()
+    } catch (err) {
+      console.log(err)
+      this.props.notify(`Ongelma kommentin tallentamisessa`, 5)
     }
   }
 
@@ -108,15 +121,12 @@ class App extends React.Component {
       await blogService.setToken(this.props.user.token)
     }
 
-    console.log("after init: ", this.props)
-
     const userJSON = window.localStorage.getItem('loggedUser')
     console.log("after componentDidMount: ", this.props)
   }
 
   render() {
 
-    console.log('user: ', this.props.user)
 
     return (
       <Router>
@@ -152,7 +162,7 @@ class App extends React.Component {
             }} />
             <Route exact path="/users" render={() => <UserList />} />
             <Route exact path="/users/:id" render={({ match }) => <User user={this.userById(match.params.id)} />} />
-            <Route exact path="/blogs/:id" render={({ match }) => <Blog blog={this.blogById(match.params.id)} />} />
+            <Route exact path="/blogs/:id" render={({ match }) => <Blog blog={this.blogById(match.params.id)} addNewComment={this.addNewComment} />} />
           </div>
         </div>
       </Router>
@@ -166,7 +176,8 @@ const mapStateToProps = (store) => {
   return {
     users: store.users,
     blogs: store.blogs,
-    user: store.user
+    user: store.user,
+    newComment: store.newComment
   }
 }
 
@@ -178,7 +189,9 @@ const mapDispatchToProps = {
   continueSession,
   initializeUser,
   logout,
-  createNewBlog
+  createNewBlog,
+  updateBlog,
+  resetComment
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(App)

@@ -5,7 +5,6 @@ import { connect } from 'react-redux'
 
 const UserList = (props) => {
 
-    console.log('props at userlist: ', props)
     return (
         <table>
             <thead>

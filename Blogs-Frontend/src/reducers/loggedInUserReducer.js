@@ -4,17 +4,14 @@ import blogService from '../services/blogs'
 const loggedInUserReducer = (state = {}, action) => {
     switch(action.type) {
         case 'LOGIN':
-            console.log("user at reducer: ", action.user)
             return action.user
         case 'CONT':
             return action.user
         case 'INIT_USER':
-            console.log("INITED USR:", action)
             return action.user
         case 'LOGOUT':
             return null
         default:
-            console.log("Default at user: ")
             return state
     }
 }
@@ -46,7 +43,6 @@ export const continueSession = (existingUser) => {
 }
 
 export const initializeUser = () => {
-
     return async(dispatch) => {
         const user = JSON.parse(window.localStorage.getItem('loggedUser'))
         dispatch({

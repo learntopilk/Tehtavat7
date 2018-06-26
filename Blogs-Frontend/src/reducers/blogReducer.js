@@ -6,6 +6,16 @@ const blogReducer = (store = [], action) => {
             return action.blogs
         case 'CREATE_BLOG':
             return store.concat(action.blog)
+        case 'UPDATE_BLOG':
+            const old = store.findIndex(b => b.id === action.blogToUpdate.id)
+            if (old === -1) {
+                return store
+            } else {
+                let updated = store
+                updated.splice(old, 1, action.blogToUpdate)
+                console.log("updated: ", updated)
+                return updated
+            }
         default:
             return store
     }
@@ -14,7 +24,6 @@ const blogReducer = (store = [], action) => {
 export const initializeBlogs = () => {
     return async (dispatch) => {
         const blogs = await blogService.getAll()
-        console.log("blogs at initializeBlogs: ", blogs)
         dispatch({
             type: 'INIT_BLOGS',
             blogs
@@ -27,6 +36,15 @@ export const createNewBlog = (blog) => {
         dispatch({
             type: 'CREATE_BLOG',
             blog
+        })
+    }
+}
+
+export const updateBlog = (blogToUpdate) => {
+    return async (dispatch) => {
+        dispatch({
+            type: 'UPDATE_BLOG',
+            blogToUpdate
         })
     }
 }

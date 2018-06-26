@@ -25,7 +25,6 @@ export const updateLoginInfo = (userInfoObj) => {
 
 export const resetLoginInfo = () => {
     return (dispatch) => {
-        console.log("Resetting login info")
         dispatch({
             type: 'RESET_LINFO',
             data: emptyLoginInfo

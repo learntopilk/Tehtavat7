@@ -7,6 +7,7 @@ import userReducer from './reducers/userReducer';
 import blogReducer from './reducers/blogReducer';
 import loggedInUserReducer from './reducers/loggedInUserReducer';
 import loginInfoReducer from './reducers/loginInfoReducer'
+import newCommentReducer from './reducers/newCommentReducer'
 
 
 const reducer = combineReducers({
@@ -14,13 +15,13 @@ const reducer = combineReducers({
     users: userReducer,
     blogs: blogReducer,
     user: loggedInUserReducer,
-    loginInfo: loginInfoReducer
+    loginInfo: loginInfoReducer,
+    newComment: newCommentReducer
 })
 
 const store = createStore(reducer, applyMiddleware(thunk))
 
 store.subscribe((s) => {
     console.log("logging at each update: ", store.getState())
-    console.log(s)
   })
 export default store

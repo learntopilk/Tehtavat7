@@ -175,7 +175,10 @@ blogsRouter.post('/:id/comments', async (req, res) => {
   console.log('req.body.comment: ', req.body.comment)
   try {
     const b = await Blog.findOneAndUpdate({ _id: req.params.id }, { $push: { comments: req.body.comment } })
-    return res.status(201).json(b)
+    console.log(b)
+    const newB = b
+    newB.comments = newB.comments.concat(req.body.comment)
+    return res.status(201).json(formatBlogPost(newB))
   } catch (err) {
     console.log(err)
     return res.status(400).json({ error: 'error while saving comment' })

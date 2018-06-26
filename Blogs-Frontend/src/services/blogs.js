@@ -1,4 +1,5 @@
 import axios from 'axios'
+//import { bindActionCreators } from '../../../../../../../../Library/Caches/typescript/2.9/node_modules/redux';
 const baseUrl = '/api/blogs'
 
 let token = null
@@ -48,4 +49,16 @@ const removeBlogPost = async (id) => {
   return response.data
 }
 
-export default { getAll, setToken, createBlogPost, updateBlogPost, removeBlogPost }
+const addCommentToPost = async (id, comment) => {
+  console.log("comment: ", comment)
+  const response = await axios.post(`${baseUrl}/${id}/comments`, comment)
+  console.log("response: ", response)
+  return response.data
+}
+
+const getComments = async (id) => {
+  const response = await axios.get(`${baseUrl}/${id}/comments`)
+  return response.data
+}
+
+export default { getAll, setToken, createBlogPost, updateBlogPost, removeBlogPost, addCommentToPost, getComments }
