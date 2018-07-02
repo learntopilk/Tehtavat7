@@ -1,5 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import { Button } from 'react-bootstrap'
 
 
 class Togglable extends React.Component {
@@ -22,10 +23,10 @@ class Togglable extends React.Component {
 
       return (
         < div >
-          <div style={hideWhenVisible}><button onClick={this.toggleVisibility}>{this.state.buttonText}</button></div>
+          <div style={hideWhenVisible}><Button onClick={this.toggleVisibility}>{this.state.buttonText}</Button></div>
           <div style={showWhenVisible} className='togglableContent'>
             {this.props.children}
-            <button onClick={this.toggleVisibility}>cancel</button>
+            <Button onClick={this.toggleVisibility}>cancel</Button>
           </div>
         </div >
       )

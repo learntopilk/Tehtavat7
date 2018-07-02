@@ -16,7 +16,7 @@ import User from './components/User'
 import { continueSession, initializeUser, logout } from './reducers/loggedInUserReducer'
 import Navigation from './components/Navigation'
 import { resetComment } from './reducers/newCommentReducer'
-import { Table } from 'react-bootstrap'
+import { Table, Button } from 'react-bootstrap'
 
 class App extends React.Component {
   constructor(props) {
@@ -142,7 +142,7 @@ class App extends React.Component {
                 return (
                   <div>
                     <div>
-                      <button onClick={this.logout}>logout</button> &nbsp;
+                      <Button onClick={this.logout}>logout</Button> &nbsp;
                     </div>
                     <Togglable buttonText={'Create new Blog Post (Fake news)'}>
                       <BlogForm state={this.state} blogInputChangeHandler={this.onBlogInputChange} onBlogSubmit={this.onBlogSubmit} />

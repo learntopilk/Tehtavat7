@@ -1,6 +1,7 @@
 import React from 'react'
 import { updateComment } from '../reducers/newCommentReducer'
 import { connect } from 'react-redux'
+import { Button, Form, FormControl, FormGroup } from 'react-bootstrap'
 
 //const Blog = ({ blog, addNewComment }) => {
 class Blog extends React.Component {
@@ -32,10 +33,12 @@ class Blog extends React.Component {
           {blog.comments.map(c => { return (<li key={c.concat(Math.floor(Math.random() * 10000))}>{c}</li>) })}
         </ul>
         <h5>Add new comment</h5>
-        <form onSubmit={this.submitComment}>
-          <input type='text' value={this.props.newComment} onChange={(e => { this.props.updateComment(e.target.value) })}></input>
-          <button type="submit">Submit Comment</button>
-        </form>
+        <Form onSubmit={this.submitComment}>
+          <FormGroup>
+            <FormControl type='text' value={this.props.newComment} onChange={(e => { this.props.updateComment(e.target.value) })}></FormControl>
+            <Button type="submit">Submit Comment</Button>
+          </FormGroup>
+        </Form>
       </div>
     )
   }
