@@ -39,7 +39,7 @@ mongoose.connect(config.mongoUrl, options)
   .catch(err => console.log(err))
 
 const server = http.createServer(app)
-const PORT = config.port || 3003
+const PORT = process.env.PORT || config.port || 3003
 
 server.on('close', () => {
   mongoose.connection.close()
