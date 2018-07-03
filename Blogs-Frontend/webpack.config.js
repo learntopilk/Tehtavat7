@@ -3,7 +3,8 @@ const path = require('path')
 const config = {
   entry: './src/index.js',
   output: {
-    path: path.resolve(__dirname, 'dist'),
+    //path: path.resolve(__dirname, 'dist'),
+    path: path.resolve('/Users/Jonse/Documents/fullstack/fullstack/teht7/Tehtavat7/Blogs-Backend/build'),
     filename: 'main.js'
   },
  module: {
