@@ -153,7 +153,7 @@ class App extends React.Component {
                         {this.props.blogs.sort((a, b) => { return b.likes - a.likes }).map(blog =>
                           <tr key={blog.id} className="blogLink">
                             <td>
-                              <a href={`/blogs/${blog.id}`}>{blog.title}</a>
+                              <a href={`blogs/${blog.id}`}>{blog.title}</a>
                             </td>
                           </tr>
                         )}

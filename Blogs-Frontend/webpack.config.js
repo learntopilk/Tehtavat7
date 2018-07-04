@@ -13,7 +13,7 @@ const config = {
             test: /\.js$/,
             loader: 'babel-loader',
             query: {
-              presets: ['react']
+              presets: ['env', 'react']
             }
         }
      ]
