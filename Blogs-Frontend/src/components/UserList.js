@@ -1,5 +1,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
+import { Link } from 'react-router-dom'
+import { LinkContainter } from 'react-router-bootstrap'
 
 
 const UserList = (props) => {
@@ -17,7 +19,7 @@ const UserList = (props) => {
         {props.users.map(u => {
           return (
             <tr key={JSON.stringify(u.name)}>
-              <td><a href={`users/${u.id}`}>{u.name}      </a></td>
+              <td><LinkContainer to={`users/${u.id}`}><a href="#">{u.name}  </a></LinkContainer></td>
               <td>{u.blogs.length}      </td>
             </tr>
           )

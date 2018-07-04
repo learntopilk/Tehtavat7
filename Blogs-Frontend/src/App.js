@@ -17,6 +17,8 @@ import { continueSession, initializeUser, logout } from './reducers/loggedInUser
 import Navigation from './components/Navigation'
 import { resetComment } from './reducers/newCommentReducer'
 import { Table, Button } from 'react-bootstrap'
+import { LinkContainer } from 'react-router-bootstrap'
+
 
 class App extends React.Component {
   constructor(props) {
@@ -28,7 +30,7 @@ class App extends React.Component {
       loginVisible: false
     }
 
-    this.deleteHandler = (id) => {
+    this.deleteHandler = (_id) => {
       /*
       let blogsToUpdate = []
       for (let i = 0; i < this.state.blogs.length; i++) {
@@ -153,7 +155,9 @@ class App extends React.Component {
                         {this.props.blogs.sort((a, b) => { return b.likes - a.likes }).map(blog =>
                           <tr key={blog.id} className="blogLink">
                             <td>
-                              <a href={`blogs/${blog.id}`}>{blog.title}</a>
+                              <LinkContainer to={`blogs/${blog.id}`}>
+                                <a href="#">{blog.title}</a>
+                              </LinkContainer>
                             </td>
                           </tr>
                         )}
@@ -172,7 +176,7 @@ class App extends React.Component {
             }} />
             <Route exact path="/users" render={() => <UserList />} />
             <Route exact path="/users/:id" render={({ match }) => <User user={this.userById(match.params.id)} />} />
-            <Route exact path="/blogs/:id" render={({ match }) => <Blog blog={this.blogById(match.params.id)} addNewComment={this.addNewComment} />} />
+            <Route path="/blogs/:id" render={({ match }) => <Blog blog={this.blogById(match.params.id)} addNewComment={this.addNewComment} />} />
           </div>
         </div>
       </Router>
