@@ -1,7 +1,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
-import { LinkContainter } from 'react-router-bootstrap'
+import { LinkContainer } from 'react-router-bootstrap'
 
 
 const UserList = (props) => {
