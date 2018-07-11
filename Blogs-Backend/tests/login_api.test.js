@@ -9,15 +9,17 @@ beforeAll(async () => {
 
 })
 
-describe('TestSet1', async () => {
+describe.only('TestSet1', async () => {
   test('Login possible', async () => {
-    await api.post('/api/login')
+    const result = await api.post('/api/login')
       .send({ username: 'salaatti', password: 'kastike' })
-      .expect(200)
-      .expect(Object.keys(result)).toContain('token')
+
+    console.log("RESULT : ", result.body)
+    expect(200)
+    expect(Object.keys(result.body)).toContain('token')
   })
 })
 
 afterAll(async () => {
-  api.close()
+  server.close()
 })
