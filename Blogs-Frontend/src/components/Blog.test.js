@@ -2,8 +2,7 @@ import React from 'react'
 import Blog from './Blog'
 import { shallow } from 'enzyme'
 
-
-describe.skip('<Blog />', () => {
+describe('<Blog />', () => {
 
   it('No details shown before first click', () => {
     const blogItem = {
@@ -29,7 +28,7 @@ describe.skip('<Blog />', () => {
 
     let mockDelete = jest.fn()
     let renderedBlog = shallow(<Blog id='444' handleDelete={mockDelete} user={user} blog={blogItem} />)
-    const toggler = renderedBlog.find('.toggleButton')
+    //const toggler = renderedBlog.find('.toggleButton')
 
     const detailedView = renderedBlog.find('.togglableItem')
 

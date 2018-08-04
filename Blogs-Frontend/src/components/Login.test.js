@@ -6,7 +6,7 @@ import Blog from './Blog'
 jest.mock('../services/blogs')
 import blogService from '../services/blogs'
 
-describe.only('integration tests', () => {
+describe('integration tests', () => {
   let app
 
 
