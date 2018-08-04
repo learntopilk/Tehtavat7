@@ -30,17 +30,6 @@ app.get('/*', (req, res) => {
   })
 })
 
-
-
-/**
- *
- * var options = {
-  server: { socketOptions: { keepAlive: 1, connectTimeoutMS: 30000 } },
-  replset: { socketOptions: { keepAlive: 1, connectTimeoutMS: 30000 } }
-};
-mongoose.connect(secrets.db, options);
- */
-
 let options = {
   server: { socketOptions: { keepAlive: 1, connectTimeoutMS: 30000 } },
   replset: { socketOptions: { keepAlive: 1, connectTimeoutMS: 30000 } }
