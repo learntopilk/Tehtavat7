@@ -1,11 +1,11 @@
 {
-  "name": "tehtavat4",
+  "name": "tehtavat7",
   "version": "1.0.0",
   "description": "full stack open tasks 7",
   "main": "index.js",
   "scripts": {
     "start": "cross-env NODE_ENV=production node index.js",
-    "test": "cross-env NODE_ENV=test jest --verbose --forceExit",
+    "test": "cross-env NODE_ENV=test jest -i --verbose --forceExit",
     "watch": "cross-env NODE_ENV=development nodemon index.js",
     "lint": "eslint ."
   },
@@ -30,12 +30,17 @@
     "eslint": "^4.19.1",
     "express": "^4.16.3",
     "jsonwebtoken": "^8.3.0",
-    "mongoose": "^5.2.4",
+    "mongoose": "^5.2.6",
     "nodemon": "^1.18.3"
   },
   "devDependencies": {
     "cross-env": "^5.2.0",
-    "jest": "^23.4.1",
+    "jest": "^23.4.2",
     "supertest": "^3.1.0"
+  },
+  "jest": {
+    "verbose": true,
+    "testURL": "http://localhost"
+
   }
 }
